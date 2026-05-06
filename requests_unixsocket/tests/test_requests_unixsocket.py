@@ -9,6 +9,8 @@ import pytest
 import requests
 
 import requests_unixsocket
+from requests_unixsocket.adapters import UnixHTTPConnection
+from requests_unixsocket.adapters import UnixHTTPConnectionPool
 from requests_unixsocket.testutils import UnixSocketServerThread
 
 
@@ -26,6 +28,36 @@ def test_use_UnixAdapter_directly():
     ).prepare()
     url = adapter.request_url(request=prepared_request, proxies=None)
     assert url == '/info'
+
+
+def test_unix_http_connection_str_uses_unix_socket_fields():
+    unix_socket_url = (
+        'http+unix://%2Fvar%2Frun%2Fdocker.sock/info?details=true'
+    )
+    connection = UnixHTTPConnection(unix_socket_url=unix_socket_url, timeout=7)
+
+    assert str(connection) == (
+        "UnixHTTPConnection("
+        "unix_socket_url='http+unix://%2Fvar%2Frun%2Fdocker.sock/info"
+        "?details=true', "
+        "timeout=7"
+        ")"
+    )
+    assert 'host=' not in str(connection)
+    assert 'port=' not in str(connection)
+
+
+def test_unix_http_connection_pool_str_uses_unix_socket_fields():
+    socket_path = 'http+unix://%2Ftmp%2Fprofilesvc.sock/status/pid'
+    pool = UnixHTTPConnectionPool(socket_path=socket_path, timeout=11)
+
+    assert str(pool) == (
+        "UnixHTTPConnectionPool("
+        "socket_path='http+unix://%2Ftmp%2Fprofilesvc.sock/status/pid', "
+        "timeout=11"
+        ")"
+    )
+    assert 'host=' not in str(pool)
 
 
 def test_unix_domain_adapter_ok():

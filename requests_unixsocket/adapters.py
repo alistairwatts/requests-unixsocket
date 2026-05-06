@@ -36,6 +36,14 @@ class UnixHTTPConnection(urllib3.connection.HTTPConnection, object):
         sock.connect(socket_path)
         self.sock = sock
 
+    def __str__(self):
+        return (
+            f"{type(self).__name__}("
+            f"unix_socket_url={self.unix_socket_url!r}, "
+            f"timeout={self.timeout!r}"
+            ")"
+        )
+
 
 class UnixHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
 
@@ -47,6 +55,14 @@ class UnixHTTPConnectionPool(urllib3.connectionpool.HTTPConnectionPool):
 
     def _new_conn(self):
         return UnixHTTPConnection(self.socket_path, self.timeout)
+
+    def __str__(self):
+        return (
+            f"{type(self).__name__}("
+            f"socket_path={self.socket_path!r}, "
+            f"timeout={self.timeout!r}"
+            ")"
+        )
 
 
 class UnixAdapter(HTTPAdapter):
