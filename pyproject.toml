@@ -9,6 +9,9 @@ build-backend = "setuptools.build_meta"
 building = [
   "build",
 ]
+linting = [
+  "flake8",
+]
 testing = [
   "pytest",
   "pytest-cache",
